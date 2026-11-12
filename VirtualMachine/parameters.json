@@ -1,0 +1,233 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "eastus"
+        },
+        "subnetName": {
+            "value": "snet-eastus-1"
+        },
+        "virtualNetworkName": {
+            "value": "vnet-eastus-1"
+        },
+        "publicIpAddressId": {
+            "value": "azurevm-01-ip"
+        },
+        "pipDeleteOption": {
+            "value": "Detach"
+        },
+        "publicIpAddressName": {
+            "value": "azurevm-01-ip"
+        },
+        "publicIpAddressType": {
+            "value": "Static"
+        },
+        "publicIpAddressSku": {
+            "value": "Standard"
+        },
+        "publicIpAddressZones": {
+            "value": [
+                "1"
+            ]
+        },
+        "diagnosticsStorageAccountType": {
+            "value": "Standard_LRS"
+        },
+        "diagnosticsStorageAccountKind": {
+            "value": "StorageV2"
+        },
+        "backupVaultName": {
+            "value": "backuptest"
+        },
+        "backupFabricName": {
+            "value": "Azure"
+        },
+        "backupPolicyName": {
+            "value": "EnhancedPolicy-mwdtqqf7"
+        },
+        "backupVaultRGName": {
+            "value": "test"
+        },
+        "backupVaultRGIsNew": {
+            "value": true
+        },
+        "backupPolicySchedule": {
+            "value": {
+                "schedulePolicyType": "SimpleSchedulePolicyV2",
+                "scheduleRunFrequency": "Hourly",
+                "hourlySchedule": {
+                    "interval": 4,
+                    "scheduleWindowStartTime": "2021-07-26T08:00:00Z",
+                    "scheduleWindowDuration": 12
+                }
+            }
+        },
+        "backupPolicyRetention": {
+            "value": {
+                "retentionPolicyType": "LongTermRetentionPolicy",
+                "dailySchedule": {
+                    "retentionTimes": [
+                        "2026-11-12T08:00:00.000Z"
+                    ],
+                    "retentionDuration": {
+                        "count": 30,
+                        "durationType": "Days"
+                    }
+                },
+                "weeklySchedule": null,
+                "monthlySchedule": null,
+                "yearlySchedule": null
+            }
+        },
+        "backupPolicyTimeZone": {
+            "value": "UTC"
+        },
+        "backupInstantRpRetentionRangeInDays": {
+            "value": 7
+        },
+        "backupInstantRPDetails": {
+            "value": {
+                "azureBackupRGNamePrefix": "",
+                "azureBackupRGNameSuffix": ""
+            }
+        },
+        "networkInterfaceName": {
+            "value": "azurevm-0185"
+        },
+        "enableAcceleratedNetworking": {
+            "value": true
+        },
+        "networkSecurityGroupName": {
+            "value": "azurevm-01-nsg"
+        },
+        "networkSecurityGroupRules": {
+            "value": []
+        },
+        "virtualMachineName": {
+            "value": "azurevm-01"
+        },
+        "virtualMachineComputerName": {
+            "value": "azurevm-01"
+        },
+        "virtualMachineRG": {
+            "value": "test"
+        },
+        "virtualMachineZone": {
+            "value": [
+                "1"
+            ]
+        },
+        "virtualMachineSize": {
+            "value": "Standard_F1als_v7"
+        },
+        "osDiskType": {
+            "value": "Premium_LRS"
+        },
+        "osDiskDeleteOption": {
+            "value": "Delete"
+        },
+        "diskControllerType": {
+            "value": "NVMe"
+        },
+        "nicDeleteOption": {
+            "value": "Delete"
+        },
+        "securityType": {
+            "value": "TrustedLaunch"
+        },
+        "secureBoot": {
+            "value": true
+        },
+        "vTPM": {
+            "value": true
+        },
+        "adminUsername": {
+            "value": "azureuser"
+        },
+        "adminPassword": {
+            "value": null
+        },
+        "patchMode": {
+            "value": "AutomaticByPlatform"
+        },
+        "enablePeriodicAssessment": {
+            "value": "ImageDefault"
+        },
+        "enableHotpatching": {
+            "value": true
+        },
+        "rebootSetting": {
+            "value": "Never"
+        },
+        "hibernationEnabled": {
+            "value": false
+        },
+        "diagnosticsStorageAccountName": {
+            "value": "testdiag932"
+        },
+        "healthExtensionProtocol": {
+            "value": "http"
+        },
+        "healthExtensionPort": {
+            "value": 80
+        },
+        "healthExtensionRequestPath": {
+            "value": "/"
+        },
+        "healthExtensionInterval": {
+            "value": 5
+        },
+        "healthExtensionNumberOfProbes": {
+            "value": 1
+        },
+        "vnetLocation": {
+            "value": "eastus"
+        },
+        "vnetExtendedLocation": {
+            "value": {}
+        },
+        "vnetVirtualNetworkName": {
+            "value": "vnet-eastus-1"
+        },
+        "vnetResourceGroupName": {
+            "value": "test"
+        },
+        "vnetDeploymentName": {
+            "value": "vneteastusTemplateDeployment1794505099787"
+        },
+        "vnetNatGatewaysWithNewPublicIpAddress": {
+            "value": []
+        },
+        "vnetNatGatewaysWithoutNewPublicIpAddress": {
+            "value": []
+        },
+        "vnetNatGatewayPublicIpAddressesNewNames": {
+            "value": []
+        },
+        "vnetNetworkSecurityGroupsNew": {
+            "value": []
+        },
+        "vnetProperties": {
+            "value": {
+                "subnets": [
+                    {
+                        "name": "snet-eastus-1",
+                        "properties": {
+                            "addressPrefixes": [
+                                "172.16.1.0/24"
+                            ],
+                            "ipamPoolPrefixAllocations": []
+                        }
+                    }
+                ],
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "172.16.0.0/16"
+                    ]
+                }
+            }
+        },
+        "tags": {}
+    }
+}

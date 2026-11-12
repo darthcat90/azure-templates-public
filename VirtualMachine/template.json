@@ -1,0 +1,1850 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "virtualNetworkName": {
+            "type": "string"
+        },
+        "publicIpAddressId": {
+            "type": "string"
+        },
+        "pipDeleteOption": {
+            "type": "string"
+        },
+        "publicIpAddressName": {
+            "type": "string"
+        },
+        "publicIpAddressType": {
+            "type": "string"
+        },
+        "publicIpAddressSku": {
+            "type": "string"
+        },
+        "publicIpAddressZones": {
+            "type": "array"
+        },
+        "diagnosticsStorageAccountType": {
+            "type": "string"
+        },
+        "diagnosticsStorageAccountKind": {
+            "type": "string"
+        },
+        "backupVaultName": {
+            "type": "string"
+        },
+        "backupFabricName": {
+            "type": "string"
+        },
+        "backupPolicyName": {
+            "type": "string"
+        },
+        "backupVaultRGName": {
+            "type": "string"
+        },
+        "backupVaultRGIsNew": {
+            "type": "bool"
+        },
+        "backupPolicySchedule": {
+            "type": "object"
+        },
+        "backupPolicyRetention": {
+            "type": "object"
+        },
+        "backupPolicyTimeZone": {
+            "type": "string"
+        },
+        "backupInstantRpRetentionRangeInDays": {
+            "type": "int"
+        },
+        "backupInstantRPDetails": {
+            "type": "object"
+        },
+        "networkInterfaceName": {
+            "type": "string"
+        },
+        "enableAcceleratedNetworking": {
+            "type": "bool"
+        },
+        "networkSecurityGroupName": {
+            "type": "string"
+        },
+        "networkSecurityGroupRules": {
+            "type": "array"
+        },
+        "virtualMachineName": {
+            "type": "string"
+        },
+        "virtualMachineComputerName": {
+            "type": "string"
+        },
+        "virtualMachineRG": {
+            "type": "string"
+        },
+        "virtualMachineZone": {
+            "type": "array"
+        },
+        "virtualMachineSize": {
+            "type": "string"
+        },
+        "osDiskType": {
+            "type": "string"
+        },
+        "osDiskDeleteOption": {
+            "type": "string"
+        },
+        "diskControllerType": {
+            "type": "string"
+        },
+        "nicDeleteOption": {
+            "type": "string"
+        },
+        "securityType": {
+            "type": "string"
+        },
+        "secureBoot": {
+            "type": "bool"
+        },
+        "vTPM": {
+            "type": "bool"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        },
+        "patchMode": {
+            "type": "string"
+        },
+        "enablePeriodicAssessment": {
+            "type": "string"
+        },
+        "enableHotpatching": {
+            "type": "bool"
+        },
+        "rebootSetting": {
+            "type": "string"
+        },
+        "hibernationEnabled": {
+            "type": "bool"
+        },
+        "diagnosticsStorageAccountName": {
+            "type": "string"
+        },
+        "healthExtensionProtocol": {
+            "type": "string"
+        },
+        "healthExtensionPort": {
+            "type": "int"
+        },
+        "healthExtensionRequestPath": {
+            "type": "string"
+        },
+        "healthExtensionInterval": {
+            "type": "int"
+        },
+        "healthExtensionNumberOfProbes": {
+            "type": "int"
+        },
+        "vnetLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "Azure region for the deployment, resource group and resources."
+            }
+        },
+        "vnetExtendedLocation": {
+            "type": "object"
+        },
+        "vnetVirtualNetworkName": {
+            "type": "string",
+            "defaultValue": "myVnet",
+            "metadata": {
+                "description": "Name of the virtual network resource."
+            }
+        },
+        "vnetTagsByResource": {
+            "type": "object",
+            "defaultValue": {},
+            "metadata": {
+                "description": "Optional tags for the resources."
+            }
+        },
+        "vnetProperties": {
+            "type": "object",
+            "defaultValue": {},
+            "metadata": {
+                "description": "The properties of the virtual network"
+            }
+        },
+        "vnetNatGatewaysWithNewPublicIpAddress": {
+            "type": "array"
+        },
+        "vnetNatGatewaysWithoutNewPublicIpAddress": {
+            "type": "array"
+        },
+        "vnetNatGatewayPublicIpAddressesNewNames": {
+            "type": "array",
+            "metadata": {
+                "description": "Array of public ip addresses for NAT Gateways."
+            }
+        },
+        "vnetNetworkSecurityGroupsNew": {
+            "type": "array",
+            "metadata": {
+                "description": "Array of network security group objects."
+            }
+        },
+        "vnetResourceGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the vnet's containing resource group."
+            }
+        },
+        "vnetDeploymentName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the vnet deployment."
+            }
+        }
+    },
+    "variables": {
+        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', \n            parameters('virtualNetworkName'))]",
+        "subnetRef": "[concat('/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/Microsoft.Network/virtualNetworks/vnet-eastus-1', '/subnets/', parameters('subnetName'))]",
+        "diagnosticsStorageAccountId": "Microsoft.Storage/storageAccounts/testdiag932",
+        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
+        "standardSku": {
+            "name": "Standard"
+        },
+        "vnetStaticAllocation": {
+            "publicIPAllocationMethod": "Static"
+        },
+        "vnetPremiumTier": {
+            "tier": "Premium"
+        },
+        "vnetPublicIpAddressesTags": "[if(contains(parameters('vnetTagsByResource'), 'Microsoft.Network/publicIpAddresses'), parameters('vnetTagsByResource')['Microsoft.Network/publicIpAddresses'], json('{}'))]",
+        "vnetNatGatewayTags": "[if(contains(parameters('vnetTagsByResource'), 'Microsoft.Network/natGateways'), parameters('vnetTagsByResource')['Microsoft.Network/natGateways'], json('{}'))]"
+    },
+    "resources": [
+        {
+            "name": "[parameters('networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2022-11-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "primary": true,
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses',parameters('publicIpAddressName'))]",
+                                "properties": {
+                                    "deleteOption": "[parameters('pipDeleteOption')]"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]",
+                "networkSecurityGroup": {
+                    "id": "[variables('nsgId')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('networkSecurityGroupName'))]",
+                "[resourceId('Microsoft.Network/publicIpAddresses',parameters('publicIpAddressName'))]",
+                "[parameters('vnetDeploymentName')]"
+            ]
+        },
+        {
+            "name": "[parameters('networkSecurityGroupName')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2020-05-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": "[parameters('networkSecurityGroupRules')]"
+            }
+        },
+        {
+            "name": "[parameters('publicIpAddressName')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2023-06-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "[parameters('publicIpAddressType')]"
+            },
+            "sku": {
+                "name": "[parameters('publicIpAddressSku')]"
+            },
+            "zones": "[parameters('publicIpAddressZones')]"
+        },
+        {
+            "name": "[parameters('virtualMachineName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2026-04-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        },
+                        "deleteOption": "[parameters('osDiskDeleteOption')]"
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2025-datacenter-azure-edition",
+                        "version": "latest"
+                    },
+                    "diskControllerType": "[parameters('diskControllerType')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
+                            "properties": {
+                                "deleteOption": "[parameters('nicDeleteOption')]"
+                            }
+                        }
+                    ]
+                },
+                "securityProfile": {
+                    "securityType": "[parameters('securityType')]",
+                    "uefiSettings": {
+                        "secureBootEnabled": "[parameters('secureBoot')]",
+                        "vTpmEnabled": "[parameters('vTPM')]"
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachineComputerName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true,
+                        "patchSettings": {
+                            "patchMode": "[parameters('patchMode')]",
+                            "assessmentMode": "[parameters('enablePeriodicAssessment')]",
+                            "enableHotpatching": "[parameters('enableHotpatching')]",
+                            "automaticByPlatformSettings": {
+                                "rebootSetting": "[parameters('rebootSetting')]"
+                            }
+                        }
+                    }
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                },
+                "additionalCapabilities": {
+                    "hibernationEnabled": "[parameters('hibernationEnabled')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces',parameters('networkInterfaceName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts',parameters('diagnosticsStorageAccountName'))]",
+                "[parameters('vnetDeploymentName')]"
+            ],
+            "zones": "[parameters('virtualMachineZone')]",
+            "identity": {
+                "type": "systemAssigned"
+            }
+        },
+        {
+            "name": "[parameters('diagnosticsStorageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "minimumTlsVersion": "TLS1_2"
+            },
+            "kind": "[parameters('diagnosticsStorageAccountKind')]",
+            "sku": {
+                "name": "[parameters('diagnosticsStorageAccountType')]"
+            }
+        },
+        {
+            "name": "BackupVaultAndOrPolicy-backuptest-EnhancedPolicy-mwdtqqf7",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "backupVaultName": {
+                        "value": "backuptest"
+                    }
+                },
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "backupVaultName": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "[parameters('backupVaultName')]",
+                            "type": "Microsoft.RecoveryServices/vaults",
+                            "apiVersion": "2016-06-01",
+                            "location": "[parameters('location')]",
+                            "properties": {},
+                            "sku": {
+                                "name": "RS0",
+                                "tier": "Standard"
+                            }
+                        },
+                        {
+                            "name": "[concat(parameters('backupVaultName'), '/', parameters('backupPolicyName'))]",
+                            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+                            "apiVersion": "2018-01-10",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "backupManagementType": "AzureIaasVM",
+                                "policyType": "V2",
+                                "schedulePolicy": "[parameters('backupPolicySchedule')]",
+                                "retentionPolicy": "[parameters('backupPolicyRetention')]",
+                                "timeZone": "[parameters('backupPolicyTimeZone')]",
+                                "instantRpRetentionRangeInDays": "[parameters('backupInstantRpRetentionRangeInDays')]",
+                                "instantRPDetails": "[parameters('backupInstantRPDetails')]"
+                            },
+                            "dependsOn": [
+                                "[resourceId(parameters('backupVaultRGName'), 'Microsoft.RecoveryServices/vaults', parameters('backupVaultName'))]"
+                            ]
+                        }
+                    ]
+                }
+            },
+            "resourceGroup": "[parameters('backupVaultRGName')]"
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'),'-','BackupIntent')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {},
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "[concat(parameters('backupVaultName'), '/', parameters('backupFabricName'), '/', 'vm;iaasvmcontainerv2;', parameters('virtualMachineRG'), ';', parameters('virtualMachineName'))]",
+                            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/backupProtectionIntent",
+                            "apiVersion": "2016-06-01",
+                            "location": "[parameters('location')]",
+                            "properties": {
+                                "friendlyName": "[concat(parameters('virtualMachineName'),'-','BackupIntent')]",
+                                "protectionIntentItemType": "AzureResourceItem",
+                                "policyId": "[resourceId(parameters('backupVaultRGName'),'Microsoft.RecoveryServices/vaults/backupPolicies',parameters('backupVaultName'), parameters('backupPolicyName'))]",
+                                "sourceResourceId": "[resourceId(parameters('virtualMachineRG'),'Microsoft.Compute/virtualMachines',parameters('virtualMachineName'))]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId(parameters('virtualMachineRG'),'Microsoft.Compute/virtualMachines',parameters('virtualMachineName'))]",
+                "[concat('Microsoft.Resources/deployments', '/', 'BackupVaultAndOrPolicy-backuptest-EnhancedPolicy-mwdtqqf7')]"
+            ],
+            "resourceGroup": "[parameters('backupVaultRGName')]"
+        },
+        {
+            "name": "MicrosoftGuestConfiguration.ConfigurationforWindows",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://catalogartifact.azureedge.net/publicartifacts/MicrosoftGuestConfiguration.ConfigurationforWindows-1.0.0/Artifacts/MainTemplate.json"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('virtualMachineName')]"
+                    },
+                    "location": {
+                        "value": "eastus"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'),'/', 'Microsoft.Insights.VMDiagnosticsSettings')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2024-03-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publisher": "Microsoft.Azure.Diagnostics",
+                "type": "IaaSDiagnostics",
+                "typeHandlerVersion": "1.5",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "StorageAccount": "[parameters('diagnosticsStorageAccountName')]",
+                    "WadCfg": {
+                        "DiagnosticMonitorConfiguration": {
+                            "overallQuotaInMB": 5120,
+                            "Metrics": {
+                                "resourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]",
+                                "MetricAggregation": [
+                                    {
+                                        "scheduledTransferPeriod": "PT1H"
+                                    },
+                                    {
+                                        "scheduledTransferPeriod": "PT1M"
+                                    }
+                                ]
+                            },
+                            "DiagnosticInfrastructureLogs": {
+                                "scheduledTransferLogLevelFilter": "Error"
+                            },
+                            "PerformanceCounters": {
+                                "scheduledTransferPeriod": "PT1M",
+                                "PerformanceCounterConfiguration": [
+                                    {
+                                        "counterSpecifier": "\\Processor Information(_Total)\\% Processor Time",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Processor Information(_Total)\\% Privileged Time",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Processor Information(_Total)\\% User Time",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Processor Information(_Total)\\Processor Frequency",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\System\\Processes",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Process(_Total)\\Thread Count",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Process(_Total)\\Handle Count",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\System\\System Up Time",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\System\\Context Switches/sec",
+                                        "unit": "CountPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\System\\Processor Queue Length",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Memory\\% Committed Bytes In Use",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Memory\\Available Bytes",
+                                        "unit": "Bytes",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Memory\\Committed Bytes",
+                                        "unit": "Bytes",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Memory\\Cache Bytes",
+                                        "unit": "Bytes",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Memory\\Pool Paged Bytes",
+                                        "unit": "Bytes",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Memory\\Pool Nonpaged Bytes",
+                                        "unit": "Bytes",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Memory\\Pages/sec",
+                                        "unit": "CountPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Memory\\Page Faults/sec",
+                                        "unit": "CountPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Process(_Total)\\Working Set",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Process(_Total)\\Working Set - Private",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\% Disk Time",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\% Disk Read Time",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\% Disk Write Time",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\% Idle Time",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Disk Bytes/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Disk Read Bytes/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Disk Write Bytes/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Disk Transfers/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Disk Reads/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Disk Writes/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Avg. Disk sec/Transfer",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Avg. Disk sec/Read",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Avg. Disk sec/Write",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Avg. Disk Queue Length",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Avg. Disk Read Queue Length",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Avg. Disk Write Queue Length",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\% Free Space",
+                                        "unit": "Percent",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\LogicalDisk(_Total)\\Free Megabytes",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Network Interface(*)\\Bytes Total/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Network Interface(*)\\Bytes Sent/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Network Interface(*)\\Bytes Received/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Network Interface(*)\\Packets/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Network Interface(*)\\Packets Sent/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Network Interface(*)\\Packets Received/sec",
+                                        "unit": "BytesPerSecond",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Network Interface(*)\\Packets Outbound Errors",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    },
+                                    {
+                                        "counterSpecifier": "\\Network Interface(*)\\Packets Received Errors",
+                                        "unit": "Count",
+                                        "sampleRate": "PT60S"
+                                    }
+                                ]
+                            },
+                            "WindowsEventLog": {
+                                "scheduledTransferPeriod": "PT1M",
+                                "DataSource": [
+                                    {
+                                        "name": "Application!*[System[(Level = 1 or Level = 2 or Level = 3)]]"
+                                    },
+                                    {
+                                        "name": "Security!*[System[band(Keywords,4503599627370496)]]"
+                                    },
+                                    {
+                                        "name": "System!*[System[(Level = 1 or Level = 2 or Level = 3)]]"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "protectedSettings": {
+                    "storageAccountName": "[parameters('diagnosticsStorageAccountName')]",
+                    "storageAccountKey": "[first(listKeys(variables('diagnosticsStorageAccountId'),'2019-06-01').keys).value]",
+                    "storageAccountEndPoint": "https://core.windows.net/"
+                }
+            },
+            "dependsOn": [
+                "MicrosoftGuestConfiguration.ConfigurationforWindows"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'),'/HealthExtension')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2024-03-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publisher": "Microsoft.ManagedServices",
+                "type": "ApplicationHealthWindows",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": false,
+                "settings": {
+                    "protocol": "[parameters('healthExtensionProtocol')]",
+                    "port": "[parameters('healthExtensionPort')]",
+                    "requestPath": "[parameters('healthExtensionRequestPath')]",
+                    "intervalInSeconds": "[parameters('healthExtensionInterval')]",
+                    "numberOfProbes": "[parameters('healthExtensionNumberOfProbes')]"
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', 'Microsoft.Insights.VMDiagnosticsSettings')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-AlertsActionGroup')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {},
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "microsoft.insights/actionGroups",
+                            "apiVersion": "2022-06-01",
+                            "name": "RecommendedAlertRules-AG-1",
+                            "location": "global",
+                            "properties": {
+                                "groupShortName": "recalert1",
+                                "enabled": true,
+                                "emailReceivers": [
+                                    {
+                                        "name": "Email0_-EmailAction-",
+                                        "emailAddress": "isra@minc17cursosoutlook.onmicrosoft.com",
+                                        "useCommonAlertSchema": true
+                                    }
+                                ],
+                                "smsReceivers": [],
+                                "webhookReceivers": [],
+                                "eventHubReceivers": [],
+                                "itsmReceivers": [],
+                                "azureAppPushReceivers": [],
+                                "automationRunbookReceivers": [],
+                                "voiceReceivers": [],
+                                "logicAppReceivers": [],
+                                "azureFunctionReceivers": [],
+                                "armRoleReceivers": []
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-VmAlertsRule-0')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "targetResourceId": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                    },
+                    "targetResourceName": {
+                        "value": "[concat(parameters('virtualMachineName'))]"
+                    }
+                },
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "targetResourceId": {
+                            "type": "string",
+                            "defaultValue": "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/azurevm-01"
+                        },
+                        "targetResourceName": {
+                            "type": "string"
+                        },
+                        "actionGroupIds": {
+                            "type": "array",
+                            "defaultValue": [
+                                "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/microsoft.insights/actionGroups/RecommendedAlertRules-AG-1"
+                            ],
+                            "metadata": {
+                                "description": "Insert Action groups ids to attach them to the below alert rules."
+                            }
+                        },
+                        "location": {
+                            "type": "string",
+                            "defaultValue": "eastus"
+                        },
+                        "alertNamePrefix": {
+                            "type": "string",
+                            "defaultValue": "Percentage CPU",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "prefix of the alert rule name"
+                            }
+                        },
+                        "alertName": {
+                            "type": "string",
+                            "defaultValue": "Percentage CPU - azurevm-01",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "Name of the alert rule"
+                            }
+                        },
+                        "severity": {
+                            "type": "int",
+                            "allowedValues": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "defaultValue": 3,
+                            "metadata": {
+                                "description": "Severity of alert {0,1,2,3,4}"
+                            }
+                        },
+                        "threshold": {
+                            "type": "int",
+                            "defaultValue": 80,
+                            "metadata": {
+                                "description": "The threshold value at which the alert is activated."
+                            }
+                        }
+                    },
+                    "variables": {
+                        "scopes": "[array(parameters('targetResourceId'))]",
+                        "copy": [
+                            {
+                                "name": "actionsForMetricAlerts",
+                                "count": "[length(parameters('actionGroupIds'))]",
+                                "input": {
+                                    "actiongroupId": "[parameters('actionGroupIds')[copyIndex('actionsForMetricAlerts')]]"
+                                }
+                            }
+                        ]
+                    },
+                    "resources": [
+                        {
+                            "name": "[parameters('alertName')]",
+                            "type": "Microsoft.Insights/metricAlerts",
+                            "apiVersion": "2018-03-01",
+                            "location": "global",
+                            "tags": {
+                                "alertRuleCreatedWithAlertsRecommendations": "true"
+                            },
+                            "properties": {
+                                "severity": "[parameters('severity')]",
+                                "enabled": true,
+                                "scopes": "[variables('scopes')]",
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                    "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
+                                    "allOf": [
+                                        {
+                                            "name": "Metric1",
+                                            "metricName": "Percentage CPU",
+                                            "operator": "GreaterThan",
+                                            "threshold": "[parameters('threshold')]",
+                                            "timeAggregation": "Average"
+                                        }
+                                    ]
+                                },
+                                "actions": "[variables('actionsForMetricAlerts')]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Resources/deployments', concat(parameters('virtualMachineName'), '-AlertsActionGroup'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-VmAlertsRule-1')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "targetResourceId": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                    },
+                    "targetResourceName": {
+                        "value": "[concat(parameters('virtualMachineName'))]"
+                    }
+                },
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "targetResourceId": {
+                            "type": "string",
+                            "defaultValue": "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/azurevm-01"
+                        },
+                        "targetResourceName": {
+                            "type": "string"
+                        },
+                        "actionGroupIds": {
+                            "type": "array",
+                            "defaultValue": [
+                                "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/microsoft.insights/actionGroups/RecommendedAlertRules-AG-1"
+                            ],
+                            "metadata": {
+                                "description": "Insert Action groups ids to attach them to the below alert rules."
+                            }
+                        },
+                        "location": {
+                            "type": "string",
+                            "defaultValue": "eastus"
+                        },
+                        "alertNamePrefix": {
+                            "type": "string",
+                            "defaultValue": "Available Memory Bytes",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "prefix of the alert rule name"
+                            }
+                        },
+                        "alertName": {
+                            "type": "string",
+                            "defaultValue": "Available Memory Bytes - azurevm-01",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "Name of the alert rule"
+                            }
+                        },
+                        "severity": {
+                            "type": "int",
+                            "allowedValues": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "defaultValue": 3,
+                            "metadata": {
+                                "description": "Severity of alert {0,1,2,3,4}"
+                            }
+                        },
+                        "threshold": {
+                            "type": "int",
+                            "defaultValue": 1000000000,
+                            "metadata": {
+                                "description": "The threshold value at which the alert is activated."
+                            }
+                        }
+                    },
+                    "variables": {
+                        "scopes": "[array(parameters('targetResourceId'))]",
+                        "copy": [
+                            {
+                                "name": "actionsForMetricAlerts",
+                                "count": "[length(parameters('actionGroupIds'))]",
+                                "input": {
+                                    "actiongroupId": "[parameters('actionGroupIds')[copyIndex('actionsForMetricAlerts')]]"
+                                }
+                            }
+                        ]
+                    },
+                    "resources": [
+                        {
+                            "name": "[parameters('alertName')]",
+                            "type": "Microsoft.Insights/metricAlerts",
+                            "apiVersion": "2018-03-01",
+                            "location": "global",
+                            "tags": {
+                                "alertRuleCreatedWithAlertsRecommendations": "true"
+                            },
+                            "properties": {
+                                "severity": "[parameters('severity')]",
+                                "enabled": true,
+                                "scopes": "[variables('scopes')]",
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                    "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
+                                    "allOf": [
+                                        {
+                                            "name": "Metric1",
+                                            "metricName": "Available Memory Bytes",
+                                            "operator": "LessThan",
+                                            "threshold": "[parameters('threshold')]",
+                                            "timeAggregation": "Average"
+                                        }
+                                    ]
+                                },
+                                "actions": "[variables('actionsForMetricAlerts')]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Resources/deployments', concat(parameters('virtualMachineName'), '-AlertsActionGroup'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-VmAlertsRule-2')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "targetResourceId": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                    },
+                    "targetResourceName": {
+                        "value": "[concat(parameters('virtualMachineName'))]"
+                    }
+                },
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "targetResourceId": {
+                            "type": "string",
+                            "defaultValue": "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/azurevm-01"
+                        },
+                        "targetResourceName": {
+                            "type": "string"
+                        },
+                        "actionGroupIds": {
+                            "type": "array",
+                            "defaultValue": [
+                                "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/microsoft.insights/actionGroups/RecommendedAlertRules-AG-1"
+                            ],
+                            "metadata": {
+                                "description": "Insert Action groups ids to attach them to the below alert rules."
+                            }
+                        },
+                        "location": {
+                            "type": "string",
+                            "defaultValue": "eastus"
+                        },
+                        "alertNamePrefix": {
+                            "type": "string",
+                            "defaultValue": "Data Disk IOPS Consumed Percentage",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "prefix of the alert rule name"
+                            }
+                        },
+                        "alertName": {
+                            "type": "string",
+                            "defaultValue": "Data Disk IOPS Consumed Percentage - azurevm-01",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "Name of the alert rule"
+                            }
+                        },
+                        "severity": {
+                            "type": "int",
+                            "allowedValues": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "defaultValue": 3,
+                            "metadata": {
+                                "description": "Severity of alert {0,1,2,3,4}"
+                            }
+                        },
+                        "threshold": {
+                            "type": "int",
+                            "defaultValue": 95,
+                            "metadata": {
+                                "description": "The threshold value at which the alert is activated."
+                            }
+                        }
+                    },
+                    "variables": {
+                        "scopes": "[array(parameters('targetResourceId'))]",
+                        "copy": [
+                            {
+                                "name": "actionsForMetricAlerts",
+                                "count": "[length(parameters('actionGroupIds'))]",
+                                "input": {
+                                    "actiongroupId": "[parameters('actionGroupIds')[copyIndex('actionsForMetricAlerts')]]"
+                                }
+                            }
+                        ]
+                    },
+                    "resources": [
+                        {
+                            "name": "[parameters('alertName')]",
+                            "type": "Microsoft.Insights/metricAlerts",
+                            "apiVersion": "2018-03-01",
+                            "location": "global",
+                            "tags": {
+                                "alertRuleCreatedWithAlertsRecommendations": "true"
+                            },
+                            "properties": {
+                                "severity": "[parameters('severity')]",
+                                "enabled": true,
+                                "scopes": "[variables('scopes')]",
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                    "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
+                                    "allOf": [
+                                        {
+                                            "name": "Metric1",
+                                            "metricName": "Data Disk IOPS Consumed Percentage",
+                                            "operator": "GreaterThan",
+                                            "threshold": "[parameters('threshold')]",
+                                            "timeAggregation": "Average"
+                                        }
+                                    ]
+                                },
+                                "actions": "[variables('actionsForMetricAlerts')]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Resources/deployments', concat(parameters('virtualMachineName'), '-AlertsActionGroup'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-VmAlertsRule-3')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "targetResourceId": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                    },
+                    "targetResourceName": {
+                        "value": "[concat(parameters('virtualMachineName'))]"
+                    }
+                },
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "targetResourceId": {
+                            "type": "string",
+                            "defaultValue": "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/azurevm-01"
+                        },
+                        "targetResourceName": {
+                            "type": "string"
+                        },
+                        "actionGroupIds": {
+                            "type": "array",
+                            "defaultValue": [
+                                "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/microsoft.insights/actionGroups/RecommendedAlertRules-AG-1"
+                            ],
+                            "metadata": {
+                                "description": "Insert Action groups ids to attach them to the below alert rules."
+                            }
+                        },
+                        "location": {
+                            "type": "string",
+                            "defaultValue": "eastus"
+                        },
+                        "alertNamePrefix": {
+                            "type": "string",
+                            "defaultValue": "OS Disk IOPS Consumed Percentage",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "prefix of the alert rule name"
+                            }
+                        },
+                        "alertName": {
+                            "type": "string",
+                            "defaultValue": "OS Disk IOPS Consumed Percentage - azurevm-01",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "Name of the alert rule"
+                            }
+                        },
+                        "severity": {
+                            "type": "int",
+                            "allowedValues": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "defaultValue": 3,
+                            "metadata": {
+                                "description": "Severity of alert {0,1,2,3,4}"
+                            }
+                        },
+                        "threshold": {
+                            "type": "int",
+                            "defaultValue": 95,
+                            "metadata": {
+                                "description": "The threshold value at which the alert is activated."
+                            }
+                        }
+                    },
+                    "variables": {
+                        "scopes": "[array(parameters('targetResourceId'))]",
+                        "copy": [
+                            {
+                                "name": "actionsForMetricAlerts",
+                                "count": "[length(parameters('actionGroupIds'))]",
+                                "input": {
+                                    "actiongroupId": "[parameters('actionGroupIds')[copyIndex('actionsForMetricAlerts')]]"
+                                }
+                            }
+                        ]
+                    },
+                    "resources": [
+                        {
+                            "name": "[parameters('alertName')]",
+                            "type": "Microsoft.Insights/metricAlerts",
+                            "apiVersion": "2018-03-01",
+                            "location": "global",
+                            "tags": {
+                                "alertRuleCreatedWithAlertsRecommendations": "true"
+                            },
+                            "properties": {
+                                "severity": "[parameters('severity')]",
+                                "enabled": true,
+                                "scopes": "[variables('scopes')]",
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                    "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
+                                    "allOf": [
+                                        {
+                                            "name": "Metric1",
+                                            "metricName": "OS Disk IOPS Consumed Percentage",
+                                            "operator": "GreaterThan",
+                                            "threshold": "[parameters('threshold')]",
+                                            "timeAggregation": "Average"
+                                        }
+                                    ]
+                                },
+                                "actions": "[variables('actionsForMetricAlerts')]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Resources/deployments', concat(parameters('virtualMachineName'), '-AlertsActionGroup'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-VmAlertsRule-4')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "targetResourceId": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                    },
+                    "targetResourceName": {
+                        "value": "[concat(parameters('virtualMachineName'))]"
+                    }
+                },
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "targetResourceId": {
+                            "type": "string",
+                            "defaultValue": "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/azurevm-01"
+                        },
+                        "targetResourceName": {
+                            "type": "string"
+                        },
+                        "actionGroupIds": {
+                            "type": "array",
+                            "defaultValue": [
+                                "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/microsoft.insights/actionGroups/RecommendedAlertRules-AG-1"
+                            ],
+                            "metadata": {
+                                "description": "Insert Action groups ids to attach them to the below alert rules."
+                            }
+                        },
+                        "location": {
+                            "type": "string",
+                            "defaultValue": "eastus"
+                        },
+                        "alertNamePrefix": {
+                            "type": "string",
+                            "defaultValue": "Network In Total",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "prefix of the alert rule name"
+                            }
+                        },
+                        "alertName": {
+                            "type": "string",
+                            "defaultValue": "Network In Total - azurevm-01",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "Name of the alert rule"
+                            }
+                        },
+                        "severity": {
+                            "type": "int",
+                            "allowedValues": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "defaultValue": 3,
+                            "metadata": {
+                                "description": "Severity of alert {0,1,2,3,4}"
+                            }
+                        },
+                        "threshold": {
+                            "type": "int",
+                            "defaultValue": 500000000000,
+                            "metadata": {
+                                "description": "The threshold value at which the alert is activated."
+                            }
+                        }
+                    },
+                    "variables": {
+                        "scopes": "[array(parameters('targetResourceId'))]",
+                        "copy": [
+                            {
+                                "name": "actionsForMetricAlerts",
+                                "count": "[length(parameters('actionGroupIds'))]",
+                                "input": {
+                                    "actiongroupId": "[parameters('actionGroupIds')[copyIndex('actionsForMetricAlerts')]]"
+                                }
+                            }
+                        ]
+                    },
+                    "resources": [
+                        {
+                            "name": "[parameters('alertName')]",
+                            "type": "Microsoft.Insights/metricAlerts",
+                            "apiVersion": "2018-03-01",
+                            "location": "global",
+                            "tags": {
+                                "alertRuleCreatedWithAlertsRecommendations": "true"
+                            },
+                            "properties": {
+                                "severity": "[parameters('severity')]",
+                                "enabled": true,
+                                "scopes": "[variables('scopes')]",
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                    "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
+                                    "allOf": [
+                                        {
+                                            "name": "Metric1",
+                                            "metricName": "Network In Total",
+                                            "operator": "GreaterThan",
+                                            "threshold": "[parameters('threshold')]",
+                                            "timeAggregation": "Total"
+                                        }
+                                    ]
+                                },
+                                "actions": "[variables('actionsForMetricAlerts')]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Resources/deployments', concat(parameters('virtualMachineName'), '-AlertsActionGroup'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-VmAlertsRule-5')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "targetResourceId": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                    },
+                    "targetResourceName": {
+                        "value": "[concat(parameters('virtualMachineName'))]"
+                    }
+                },
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "targetResourceId": {
+                            "type": "string",
+                            "defaultValue": "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/azurevm-01"
+                        },
+                        "targetResourceName": {
+                            "type": "string"
+                        },
+                        "actionGroupIds": {
+                            "type": "array",
+                            "defaultValue": [
+                                "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/microsoft.insights/actionGroups/RecommendedAlertRules-AG-1"
+                            ],
+                            "metadata": {
+                                "description": "Insert Action groups ids to attach them to the below alert rules."
+                            }
+                        },
+                        "location": {
+                            "type": "string",
+                            "defaultValue": "eastus"
+                        },
+                        "alertNamePrefix": {
+                            "type": "string",
+                            "defaultValue": "Network Out Total",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "prefix of the alert rule name"
+                            }
+                        },
+                        "alertName": {
+                            "type": "string",
+                            "defaultValue": "Network Out Total - azurevm-01",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "Name of the alert rule"
+                            }
+                        },
+                        "severity": {
+                            "type": "int",
+                            "allowedValues": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "defaultValue": 3,
+                            "metadata": {
+                                "description": "Severity of alert {0,1,2,3,4}"
+                            }
+                        },
+                        "threshold": {
+                            "type": "int",
+                            "defaultValue": 200000000000,
+                            "metadata": {
+                                "description": "The threshold value at which the alert is activated."
+                            }
+                        }
+                    },
+                    "variables": {
+                        "scopes": "[array(parameters('targetResourceId'))]",
+                        "copy": [
+                            {
+                                "name": "actionsForMetricAlerts",
+                                "count": "[length(parameters('actionGroupIds'))]",
+                                "input": {
+                                    "actiongroupId": "[parameters('actionGroupIds')[copyIndex('actionsForMetricAlerts')]]"
+                                }
+                            }
+                        ]
+                    },
+                    "resources": [
+                        {
+                            "name": "[parameters('alertName')]",
+                            "type": "Microsoft.Insights/metricAlerts",
+                            "apiVersion": "2018-03-01",
+                            "location": "global",
+                            "tags": {
+                                "alertRuleCreatedWithAlertsRecommendations": "true"
+                            },
+                            "properties": {
+                                "severity": "[parameters('severity')]",
+                                "enabled": true,
+                                "scopes": "[variables('scopes')]",
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                    "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
+                                    "allOf": [
+                                        {
+                                            "name": "Metric1",
+                                            "metricName": "Network Out Total",
+                                            "operator": "GreaterThan",
+                                            "threshold": "[parameters('threshold')]",
+                                            "timeAggregation": "Total"
+                                        }
+                                    ]
+                                },
+                                "actions": "[variables('actionsForMetricAlerts')]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Resources/deployments', concat(parameters('virtualMachineName'), '-AlertsActionGroup'))]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('virtualMachineName'), '-VmAlertsRule-6')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "targetResourceId": {
+                        "value": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+                    },
+                    "targetResourceName": {
+                        "value": "[concat(parameters('virtualMachineName'))]"
+                    }
+                },
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "targetResourceId": {
+                            "type": "string",
+                            "defaultValue": "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/Microsoft.Compute/virtualMachines/azurevm-01"
+                        },
+                        "targetResourceName": {
+                            "type": "string"
+                        },
+                        "actionGroupIds": {
+                            "type": "array",
+                            "defaultValue": [
+                                "/subscriptions/76e2f478-b093-45ce-b805-b67c42d2f0ad/resourceGroups/test/providers/microsoft.insights/actionGroups/RecommendedAlertRules-AG-1"
+                            ],
+                            "metadata": {
+                                "description": "Insert Action groups ids to attach them to the below alert rules."
+                            }
+                        },
+                        "location": {
+                            "type": "string",
+                            "defaultValue": "eastus"
+                        },
+                        "alertNamePrefix": {
+                            "type": "string",
+                            "defaultValue": "VM Availability",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "prefix of the alert rule name"
+                            }
+                        },
+                        "alertName": {
+                            "type": "string",
+                            "defaultValue": "VM Availability - azurevm-01",
+                            "minLength": 1,
+                            "metadata": {
+                                "description": "Name of the alert rule"
+                            }
+                        },
+                        "severity": {
+                            "type": "int",
+                            "allowedValues": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "defaultValue": 3,
+                            "metadata": {
+                                "description": "Severity of alert {0,1,2,3,4}"
+                            }
+                        },
+                        "threshold": {
+                            "type": "int",
+                            "defaultValue": 1,
+                            "metadata": {
+                                "description": "The threshold value at which the alert is activated."
+                            }
+                        }
+                    },
+                    "variables": {
+                        "scopes": "[array(parameters('targetResourceId'))]",
+                        "copy": [
+                            {
+                                "name": "actionsForMetricAlerts",
+                                "count": "[length(parameters('actionGroupIds'))]",
+                                "input": {
+                                    "actiongroupId": "[parameters('actionGroupIds')[copyIndex('actionsForMetricAlerts')]]"
+                                }
+                            }
+                        ]
+                    },
+                    "resources": [
+                        {
+                            "name": "[parameters('alertName')]",
+                            "type": "Microsoft.Insights/metricAlerts",
+                            "apiVersion": "2018-03-01",
+                            "location": "global",
+                            "tags": {
+                                "alertRuleCreatedWithAlertsRecommendations": "true"
+                            },
+                            "properties": {
+                                "severity": "[parameters('severity')]",
+                                "enabled": true,
+                                "scopes": "[variables('scopes')]",
+                                "evaluationFrequency": "PT5M",
+                                "windowSize": "PT5M",
+                                "criteria": {
+                                    "odata.type": "Microsoft.Azure.Monitor.MultipleResourceMultipleMetricCriteria",
+                                    "allOf": [
+                                        {
+                                            "name": "Metric1",
+                                            "metricName": "VmAvailabilityMetric",
+                                            "operator": "LessThan",
+                                            "threshold": "[parameters('threshold')]",
+                                            "timeAggregation": "Average"
+                                        }
+                                    ]
+                                },
+                                "actions": "[variables('actionsForMetricAlerts')]"
+                            }
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
+                "[resourceId(parameters('virtualMachineRG'), 'Microsoft.Resources/deployments', concat(parameters('virtualMachineName'), '-AlertsActionGroup'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('vnetDeploymentName')]",
+            "resourceGroup": "[parameters('vnetResourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "apiVersion": "2024-01-01",
+                            "name": "[parameters('vnetVirtualNetworkName')]",
+                            "location": "[parameters('vnetLocation')]",
+                            "extendedLocation": "[if(empty(parameters('vnetExtendedLocation')), json('null'), parameters('vnetExtendedLocation'))]",
+                            "tags": "[if(empty(parameters('vnetTagsByResource')), json('{}'), parameters('vnetTagsByResource'))]",
+                            "properties": "[parameters('vnetProperties')]"
+                        }
+                    ]
+                }
+            },
+            "copy": {
+                "name": "[parameters('vnetDeploymentName')]",
+                "count": 1
+            },
+            "dependsOn": [
+                "natGatewaysWithNewPublicIpAddressCopy",
+                "natGatewaysWithoutNewPublicIpAddressCopy",
+                "networkSecurityGroupsCopy",
+                "natGatewayPublicIpAddressesCopy",
+                "natGatewayPublicIpAddressesCopy"
+            ]
+        },
+        {
+            "condition": "[greater(length(parameters('vnetNatGatewaysWithoutNewPublicIpAddress')), 0)]",
+            "apiVersion": "2020-11-01",
+            "type": "Microsoft.Network/natGateways",
+            "name": "[parameters('vnetNatGatewaysWithoutNewPublicIpAddress')[copyIndex()].name]",
+            "location": "[parameters('vnetLocation')]",
+            "tags": "[variables('vnetNatGatewayTags')]",
+            "sku": "[variables('standardSku')]",
+            "properties": "[parameters('vnetNatGatewaysWithoutNewPublicIpAddress')[copyIndex()].properties]",
+            "copy": {
+                "name": "natGatewaysWithoutNewPublicIpAddressCopy",
+                "count": "[length(parameters('vnetNatGatewaysWithoutNewPublicIpAddress'))]"
+            }
+        },
+        {
+            "condition": "[greater(length(parameters('vnetNatGatewaysWithNewPublicIpAddress')), 0)]",
+            "apiVersion": "2020-11-01",
+            "type": "Microsoft.Network/natGateways",
+            "name": "[parameters('vnetNatGatewaysWithNewPublicIpAddress')[copyIndex()].name]",
+            "location": "[parameters('vnetLocation')]",
+            "tags": "[variables('vnetNatGatewayTags')]",
+            "sku": "[variables('standardSku')]",
+            "properties": "[parameters('vnetNatGatewaysWithNewPublicIpAddress')[copyIndex()].properties]",
+            "dependsOn": [
+                "natGatewayPublicIpAddressesCopy"
+            ],
+            "copy": {
+                "name": "natGatewaysWithNewPublicIpAddressCopy",
+                "count": "[length(parameters('vnetNatGatewaysWithNewPublicIpAddress'))]"
+            }
+        },
+        {
+            "condition": "[greater(length(parameters('vnetNatGatewayPublicIpAddressesNewNames')), 0)]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('vnetNatGatewayPublicIpAddressesNewNames')[copyIndex()]]",
+            "location": "[parameters('vnetLocation')]",
+            "sku": "[variables('standardSku')]",
+            "tags": "[variables('vnetPublicIpAddressesTags')]",
+            "properties": "[variables('vnetStaticAllocation')]",
+            "copy": {
+                "name": "natGatewayPublicIpAddressesCopy",
+                "count": "[length(parameters('vnetNatGatewayPublicIpAddressesNewNames'))]"
+            }
+        },
+        {
+            "condition": "[greater(length(parameters('vnetNetworkSecurityGroupsNew')), 0)]",
+            "apiVersion": "2020-11-01",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('vnetNetworkSecurityGroupsNew')[copyIndex()].name]",
+            "location": "[parameters('vnetLocation')]",
+            "tags": "[if(contains(parameters('vnetTagsByResource'), 'Microsoft.Network/networkSecurityGroups'), parameters('vnetTagsByResource')['Microsoft.Network/networkSecurityGroups'], json('{}'))]",
+            "properties": {},
+            "copy": {
+                "name": "networkSecurityGroupsCopy",
+                "count": "[length(parameters('vnetNetworkSecurityGroupsNew'))]"
+            }
+        }
+    ]
+}
